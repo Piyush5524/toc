@@ -1,3 +1,5 @@
+01)
+
 #include <iostream>
 #include <string>
 
@@ -43,6 +45,308 @@ int main() {
         cout << "Accepted: The string contains '111' as a substring.\n";
     } else {
         cout << "Rejected: The string does not contain '111'.\n";
+    }
+    
+    return 0;
+}
+
+02)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string has exactly two or three '1's
+bool checkTwoOrThreeOnes(const string& input) {
+    // Start from state q0
+    int state = 0;
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch(state) {
+            case 0:
+                if (ch == '1') state = 1; // Move to q1 on '1'
+                break;
+            case 1:
+                if (ch == '1') state = 2; // Move to q2 on '1'
+                break;
+            case 2:
+                if (ch == '1') state = 3; // Move to q3 on '1'
+                break;
+            case 3:
+                if (ch == '1') state = 4; // Move to q4 (trap) on '1'
+                break;
+            case 4:
+                break; // Remain in trap state q4
+        }
+    }
+    
+    // Return true if the DFA ends in state q2 (exactly two '1's) or q3 (exactly three '1's)
+    return (state == 2 || state == 3);
+}
+
+int main() {
+    string input;
+    
+    // Input the binary string
+    cout << "Enter a binary string: ";
+    cin >> input;
+    
+    // Check if the string contains exactly two or exactly three '1's
+    if (checkTwoOrThreeOnes(input)) {
+        cout << "Accepted: The string contains exactly two or three '1's.\n";
+    } else {
+        cout << "Rejected: The string does not contain exactly two or three '1's.\n";
+    }
+    
+    return 0;
+}
+
+03)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string belongs to the language L1
+bool checkStringL1(const string& input) {
+    // The string must have at least 4 characters
+    if (input.length() < 4) {
+        return false;
+    }
+
+    // Store the first two characters
+    char first_char = input[0];
+    char second_char = input[1];
+
+    // Get the last two characters
+    char second_last_char = input[input.length() - 2];
+    char last_char = input[input.length() - 1];
+
+    // Check if the first two characters match the last two
+    return (first_char == second_last_char && second_char == last_char);
+}
+
+int main() {
+    string input;
+    
+    // Input the string
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check if the string belongs to the language L1
+    if (checkStringL1(input)) {
+        cout << "Accepted: The string belongs to the language L1.\n";
+    } else {
+        cout << "Rejected: The string does not belong to the language L1.\n";
+    }
+    
+    return 0;
+}
+
+04)
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string belongs to the language L2
+bool checkStringL2(const string& input) {
+    int state = 0;  // Start from state q0
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch (state) {
+            case 0:  // State q0: expecting 'a' as the first character
+                if (ch == 'a') {
+                    state = 1;  // Move to state q1 on 'a'
+                } else {
+                    return false;  // Reject if 'b' appears first
+                }
+                break;
+            case 1:  // State q1: received the first 'a', now expecting any combination of 'a' and 'b'
+                if (ch == 'b') {
+                    state = 2;  // Move to state q2 on 'b'
+                }
+                // If 'a' is read, stay in state q1
+                break;
+            case 2:  // State q2: now expecting more 'a' or the final 'b'
+                if (ch == 'b') {
+                    state = 3;  // Move to accepting state q3 on 'b'
+                }
+                // If 'a' is read, stay in state q2
+                break;
+            case 3:  // State q3: accepting state, already accepted
+                return false;  // Shouldn't have more input after reaching q3
+        }
+    }
+    
+    // The string is accepted only if the DFA ends in state q3
+    return (state == 3);
+}
+
+int main() {
+    string input;
+    
+    // Input the string over {a, b}
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check if the string belongs to the language L2
+    if (checkStringL2(input)) {
+        cout << "Accepted: The string belongs to the language L2 (a(a+b)*b).\n";
+    } else {
+        cout << "Rejected: The string does not belong to the language L2.\n";
+    }
+    
+    return 0;
+}
+
+
+05)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string belongs to the EVEN-EVEN language
+bool checkEvenEven(const string& input) {
+    // Start from state q0 (both 'a' and 'b' seen an even number of times)
+    int state = 0;
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch (state) {
+            case 0:  // q0: Even 'a', Even 'b'
+                if (ch == 'a') {
+                    state = 1;  // Move to q1 (Odd 'a', Even 'b')
+                } else if (ch == 'b') {
+                    state = 2;  // Move to q2 (Even 'a', Odd 'b')
+                }
+                break;
+            case 1:  // q1: Odd 'a', Even 'b'
+                if (ch == 'a') {
+                    state = 0;  // Move back to q0 (Even 'a', Even 'b')
+                } else if (ch == 'b') {
+                    state = 3;  // Move to q3 (Odd 'a', Odd 'b')
+                }
+                break;
+            case 2:  // q2: Even 'a', Odd 'b'
+                if (ch == 'a') {
+                    state = 3;  // Move to q3 (Odd 'a', Odd 'b')
+                } else if (ch == 'b') {
+                    state = 0;  // Move back to q0 (Even 'a', Even 'b')
+                }
+                break;
+            case 3:  // q3: Odd 'a', Odd 'b'
+                if (ch == 'a') {
+                    state = 2;  // Move to q2 (Even 'a', Odd 'b')
+                } else if (ch == 'b') {
+                    state = 1;  // Move to q1 (Odd 'a', Even 'b')
+                }
+                break;
+        }
+    }
+    
+    // The string is accepted only if the DFA ends in state q0 (Even 'a', Even 'b')
+    return (state == 0);
+}
+
+int main() {
+    string input;
+    
+    // Input the string over {a, b}
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check if the string belongs to the EVEN-EVEN language
+    if (checkEvenEven(input)) {
+        cout << "Accepted: The string has an even number of 'a' and 'b'.\n";
+    } else {
+        cout << "Rejected: The string does not have an even number of 'a' and 'b'.\n";
+    }
+    
+    return 0;
+}
+
+
+06)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Check if the string belongs to L1 (starts with 'a')
+bool checkL1(const string& input) {
+    if (!input.empty() && input[0] == 'a') {
+        return true;
+    }
+    return false;
+}
+
+// Check if the string belongs to L2 (ends with 'b')
+bool checkL2(const string& input) {
+    if (!input.empty() && input[input.length() - 1] == 'b') {
+        return true;
+    }
+    return false;
+}
+
+// Union of L1 and L2
+bool unionL1L2(const string& input) {
+    return checkL1(input) || checkL2(input);
+}
+
+// Intersection of L1 and L2
+bool intersectionL1L2(const string& input) {
+    return checkL1(input) && checkL2(input);
+}
+
+// Concatenation of L1 and L2
+bool concatenationL1L2(const string& input) {
+    // Find a point in the string where L1 ends and L2 begins
+    for (size_t i = 1; i < input.length(); ++i) {
+        string part1 = input.substr(0, i);
+        string part2 = input.substr(i);
+        if (checkL1(part1) && checkL2(part2)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    string input;
+    
+    // Input the string
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check for union of L1 and L2
+    if (unionL1L2(input)) {
+        cout << "Accepted by Union (L1 ∪ L2): The string belongs to L1 or L2.\n";
+    } else {
+        cout << "Rejected by Union (L1 ∪ L2): The string does not belong to L1 or L2.\n";
+    }
+    
+    // Check for intersection of L1 and L2
+    if (intersectionL1L2(input)) {
+        cout << "Accepted by Intersection (L1 ∩ L2): The string belongs to both L1 and L2.\n";
+    } else {
+        cout << "Rejected by Intersection (L1 ∩ L2): The string does not belong to both L1 and L2.\n";
+    }
+    
+    // Check for concatenation of L1 and L2
+    if (concatenationL1L2(input)) {
+        cout << "Accepted by Concatenation (L1 L2): The string is a valid concatenation of L1 and L2.\n";
+    } else {
+        cout << "Rejected by Concatenation (L1 L2): The string is not a valid concatenation of L1 and L2.\n";
     }
     
     return 0;
