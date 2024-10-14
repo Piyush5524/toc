@@ -1,0 +1,49 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string has "111" as a substring
+bool checkThreeConsecutiveOnes(const string& input) {
+    // Start from state q0
+    int state = 0;
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch(state) {
+            case 0:
+                if (ch == '1') state = 1;
+                break;
+            case 1:
+                if (ch == '1') state = 2;
+                else state = 0;
+                break;
+            case 2:
+                if (ch == '1') state = 3;
+                else state = 0;
+                break;
+            case 3:
+                return true; // Accept state
+        }
+    }
+    
+    // If we reach here, no three consecutive 1's were found
+    return state == 3;
+}
+
+int main() {
+    string input;
+    
+    // Input the binary string
+    cout << "Enter a binary string: ";
+    cin >> input;
+    
+    // Check if the string contains three consecutive '1's
+    if (checkThreeConsecutiveOnes(input)) {
+        cout << "Accepted: The string contains '111' as a substring.\n";
+    } else {
+        cout << "Rejected: The string does not contain '111'.\n";
+    }
+    
+    return 0;
+}
