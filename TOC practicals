@@ -351,3 +351,211 @@ int main() {
     
     return 0;
 }
+
+
+07)
+
+#include <iostream>
+#include <stack>
+#include <string>
+
+using namespace std;
+
+bool simulatePDA(const string &input) {
+    stack<char> pdaStack;
+    int i = 0;
+
+    // Step 1: Initial stack state
+    pdaStack.push('Z');  // Z is the initial stack symbol
+
+    // Step 2: Process the input
+    // State q1: pushing 'a' onto the stack
+    while (i < input.length() && input[i] == 'a') {
+        pdaStack.push('a');  // Push 'a' onto the stack
+        i++;
+    }
+
+    // Step 3: Process the 'b' characters
+    // State q2: popping 'a' for each 'b'
+    while (i < input.length() && input[i] == 'b') {
+        if (pdaStack.empty() || pdaStack.top() != 'a') {
+            return false;  // Stack should contain 'a' for every 'b'
+        }
+        pdaStack.pop();  // Pop 'a' for every 'b'
+        i++;
+    }
+
+    // Step 4: Check if the stack has only the initial symbol and input is fully processed
+    return (pdaStack.top() == 'Z' && i == input.length());
+}
+
+int main() {
+    string input;
+
+    // Take input string
+    cout << "Enter a string consisting of 'a' and 'b': ";
+    cin >> input;
+
+    // Simulate PDA
+    if (simulatePDA(input)) {
+        cout << "The string is accepted by the PDA." << endl;
+    } else {
+        cout << "The string is not accepted by the PDA." << endl;
+    }
+
+    return 0;
+}
+
+
+08)
+
+
+#include <iostream>
+#include <stack>
+#include <string>
+
+using namespace std;
+
+bool simulatePDA(const string &input) {
+    stack<char> pdaStack;
+    int i = 0;
+
+    // Step 1: Process the first part 'w' and push it onto the stack
+    while (i < input.length() && (input[i] == 'a' || input[i] == 'b')) {
+        pdaStack.push(input[i]);
+        i++;
+    }
+
+    // Step 2: Ensure we encounter the special symbol 'X'
+    if (i >= input.length() || input[i] != 'X') {
+        return false;  // If 'X' is not found, reject the input
+    }
+    i++;  // Move past 'X'
+
+    // Step 3: Process the second part 'w^r' and pop from the stack
+    while (i < input.length() && (input[i] == 'a' || input[i] == 'b')) {
+        if (pdaStack.empty() || pdaStack.top() != input[i]) {
+            return false;  // If stack doesn't match the reverse part, reject the input
+        }
+        pdaStack.pop();
+        i++;
+    }
+
+    // Step 4: Ensure the stack is empty and the entire input has been processed
+    return pdaStack.empty() && i == input.length();
+}
+
+int main() {
+    string input;
+
+    // Take input string
+    cout << "Enter a string in the form 'wXwr': ";
+    cin >> input;
+
+    // Simulate PDA
+    if (simulatePDA(input)) {
+        cout << "The string is accepted by the PDA." << endl;
+    } else {
+        cout << "The string is not accepted by the PDA." << endl;
+    }
+
+    return 0;
+}
+
+09)
+
+
+10)
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class TuringMachine {
+private:
+    vector<char> tape;
+    int head;          // Tape head position
+    string state;      // Current state of the Turing Machine
+
+public:
+    // Constructor to initialize the Turing Machine with the binary input
+    TuringMachine(const string &input) {
+        tape.assign(input.begin(), input.end());  // Load binary input on tape
+        tape.push_back('_');                      // Append blank symbol at the end
+        head = tape.size() - 2;                   // Start at the rightmost bit (second last index)
+        state = "q0";                             // Initial state
+    }
+
+    // Function to simulate a single step of the Turing Machine
+    bool step() {
+        char symbol = tape[head];
+
+        if (state == "q0") {
+            if (symbol == '1') {
+                tape[head] = '0';   // Change '1' to '0' (carry over)
+                head--;             // Move left
+                state = "q1";       // Continue to handle the carry
+            } else if (symbol == '0') {
+                tape[head] = '1';   // Change '0' to '1' (no carry needed)
+                state = "qf";       // Transition to final state
+            } else if (symbol == '_') {
+                tape[head] = '1';   // Add a '1' at the front (since carry remains)
+                state = "qf";       // Transition to final state
+            }
+        } else if (state == "q1") {
+            if (symbol == '1') {
+                tape[head] = '0';   // Keep carrying the 1
+                head--;             // Move left
+            } else if (symbol == '0') {
+                tape[head] = '1';   // Increment and stop carry
+                state = "qf";       // Transition to final state
+            } else if (symbol == '_') {
+                tape[head] = '1';   // Add a '1' at the front if we carried out
+                state = "qf";       // Transition to final state
+            }
+        }
+
+        return true;  // Continue processing
+    }
+
+    // Function to run the Turing Machine until completion
+    bool run() {
+        while (state != "qf") {
+            step();
+        }
+        return true;  // Machine halts after increment
+    }
+
+    // Function to display the tape contents (for debugging/output)
+    void displayTape() const {
+        for (char c : tape) {
+            if (c == '_') break;  // Stop printing when blank symbol is encountered
+            cout << c;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    string input;
+
+    // Input the binary number
+    cout << "Enter a binary number: ";
+    cin >> input;
+
+    // Create a Turing machine instance with the binary input
+    TuringMachine tm(input);
+
+    // Simulate the Turing machine
+    tm.run();
+
+    // Display the updated tape (binary number incremented by 1)
+    cout << "Incremented binary number: ";
+    tm.displayTape();
+
+    return 0;
+}
+
