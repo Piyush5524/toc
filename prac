@@ -1,0 +1,694 @@
+01)    . Design a Finite Automata (FA) that accepts all strings over S={0, 1} having three consecutive 1's as
+a substring. Write a program to simulate this FA.
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string has "111" as a substring
+bool checkThreeConsecutiveOnes(const string& input) {
+    // Start from state q0
+    int state = 0;
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch(state) {
+            case 0:
+                if (ch == '1') state = 1;
+                break;
+            case 1:
+                if (ch == '1') state = 2;
+                else state = 0;
+                break;
+            case 2:
+                if (ch == '1') state = 3;
+                else state = 0;
+                break;
+            case 3:
+                return true; // Accept state
+        }
+    }
+    
+    // If we reach here, no three consecutive 1's were found
+    return state == 3;
+}
+
+int main() {
+    string input;
+    
+    // Input the binary string
+    cout << "Enter a binary string: ";
+    cin >> input;
+    
+    // Check if the string contains three consecutive '1's
+    if (checkThreeConsecutiveOnes(input)) {
+        cout << "Accepted: The string contains '111' as a substring.\n";
+    } else {
+        cout << "Rejected: The string does not contain '111'.\n";
+    }
+    
+    return 0;
+}
+
+02)   Design a Finite Automata (FA) that accepts all strings over S={0, 1} having either exactly two 1's or
+exactly three 1's, not more nor less. Write a program to simulate this FA.
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string has exactly two or three '1's
+bool checkTwoOrThreeOnes(const string& input) {
+    // Start from state q0
+    int state = 0;
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch(state) {
+            case 0:
+                if (ch == '1') state = 1; // Move to q1 on '1'
+                break;
+            case 1:
+                if (ch == '1') state = 2; // Move to q2 on '1'
+                break;
+            case 2:
+                if (ch == '1') state = 3; // Move to q3 on '1'
+                break;
+            case 3:
+                if (ch == '1') state = 4; // Move to q4 (trap) on '1'
+                break;
+            case 4:
+                break; // Remain in trap state q4
+        }
+    }
+    
+    // Return true if the DFA ends in state q2 (exactly two '1's) or q3 (exactly three '1's)
+    return (state == 2 || state == 3);
+}
+
+int main() {
+    string input;
+    
+    // Input the binary string
+    cout << "Enter a binary string: ";
+    cin >> input;
+    
+    // Check if the string contains exactly two or exactly three '1's
+    if (checkTwoOrThreeOnes(input)) {
+        cout << "Accepted: The string contains exactly two or three '1's.\n";
+    } else {
+        cout << "Rejected: The string does not contain exactly two or three '1's.\n";
+    }
+    
+    return 0;
+}
+
+03)    Design a Finite Automata (FA) that accepts language L1, over S={a, b}, comprising of all strings (of
+length 4 or more) having first two characters same as the last two. Write a program to simulate this
+FA.
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string belongs to the language L1
+bool checkStringL1(const string& input) {
+    // The string must have at least 4 characters
+    if (input.length() < 4) {
+        return false;
+    }
+
+    // Store the first two characters
+    char first_char = input[0];
+    char second_char = input[1];
+
+    // Get the last two characters
+    char second_last_char = input[input.length() - 2];
+    char last_char = input[input.length() - 1];
+
+    // Check if the first two characters match the last two
+    return (first_char == second_last_char && second_char == last_char);
+}
+
+int main() {
+    string input;
+    
+    // Input the string
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check if the string belongs to the language L1
+    if (checkStringL1(input)) {
+        cout << "Accepted: The string belongs to the language L1.\n";
+    } else {
+        cout << "Rejected: The string does not belong to the language L1.\n";
+    }
+    
+    return 0;
+}
+
+
+
+04)   Design a Finite Automata (FA) that accepts language L2, over S= {a, b} where L2= a(a+b)*b. Write
+a program to simulate this FA. 
+
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string belongs to the language L2
+bool checkStringL2(const string& input) {
+    int state = 0;  // Start from state q0
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch (state) {
+            case 0:  // State q0: expecting 'a' as the first character
+                if (ch == 'a') {
+                    state = 1;  // Move to state q1 on 'a'
+                } else {
+                    return false;  // Reject if 'b' appears first
+                }
+                break;
+            case 1:  // State q1: received the first 'a', now expecting any combination of 'a' and 'b'
+                if (ch == 'b') {
+                    state = 2;  // Move to state q2 on 'b'
+                }
+                // If 'a' is read, stay in state q1
+                break;
+            case 2:  // State q2: now expecting more 'a' or the final 'b'
+                if (ch == 'b') {
+                    state = 3;  // Move to accepting state q3 on 'b'
+                }
+                // If 'a' is read, stay in state q2
+                break;
+            case 3:  // State q3: accepting state, already accepted
+                return false;  // Shouldn't have more input after reaching q3
+        }
+    }
+    
+    // The string is accepted only if the DFA ends in state q3
+    return (state == 3);
+}
+
+int main() {
+    string input;
+    
+    // Input the string over {a, b}
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check if the string belongs to the language L2
+    if (checkStringL2(input)) {
+        cout << "Accepted: The string belongs to the language L2 (a(a+b)*b).\n";
+    } else {
+        cout << "Rejected: The string does not belong to the language L2.\n";
+    }
+    
+    return 0;
+}
+
+
+
+
+05)    Design a Finite Automata (FA) that accepts language EVEN-EVEN over S={a, b}. Write a program
+to simulate this FA 
+
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// DFA function to check if the string belongs to the EVEN-EVEN language
+bool checkEvenEven(const string& input) {
+    // Start from state q0 (both 'a' and 'b' seen an even number of times)
+    int state = 0;
+    
+    // Process each character in the input string
+    for (char ch : input) {
+        switch (state) {
+            case 0:  // q0: Even 'a', Even 'b'
+                if (ch == 'a') {
+                    state = 1;  // Move to q1 (Odd 'a', Even 'b')
+                } else if (ch == 'b') {
+                    state = 2;  // Move to q2 (Even 'a', Odd 'b')
+                }
+                break;
+            case 1:  // q1: Odd 'a', Even 'b'
+                if (ch == 'a') {
+                    state = 0;  // Move back to q0 (Even 'a', Even 'b')
+                } else if (ch == 'b') {
+                    state = 3;  // Move to q3 (Odd 'a', Odd 'b')
+                }
+                break;
+            case 2:  // q2: Even 'a', Odd 'b'
+                if (ch == 'a') {
+                    state = 3;  // Move to q3 (Odd 'a', Odd 'b')
+                } else if (ch == 'b') {
+                    state = 0;  // Move back to q0 (Even 'a', Even 'b')
+                }
+                break;
+            case 3:  // q3: Odd 'a', Odd 'b'
+                if (ch == 'a') {
+                    state = 2;  // Move to q2 (Even 'a', Odd 'b')
+                } else if (ch == 'b') {
+                    state = 1;  // Move to q1 (Odd 'a', Even 'b')
+                }
+                break;
+        }
+    }
+    
+    // The string is accepted only if the DFA ends in state q0 (Even 'a', Even 'b')
+    return (state == 0);
+}
+
+int main() {
+    string input;
+    
+    // Input the string over {a, b}
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check if the string belongs to the EVEN-EVEN language
+    if (checkEvenEven(input)) {
+        cout << "Accepted: The string has an even number of 'a' and 'b'.\n";
+    } else {
+        cout << "Rejected: The string does not have an even number of 'a' and 'b'.\n";
+    }
+    
+    return 0;
+}
+
+
+06)   Write a program to simulate an FA that accepts
+a. Union of the languages L1 and L2
+b. Intersection of the languages L1 and L2
+c. Language L1 L2 (concatenation) 
+
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Check if the string belongs to L1 (starts with 'a')
+bool checkL1(const string& input) {
+    if (!input.empty() && input[0] == 'a') {
+        return true;
+    }
+    return false;
+}
+
+// Check if the string belongs to L2 (ends with 'b')
+bool checkL2(const string& input) {
+    if (!input.empty() && input[input.length() - 1] == 'b') {
+        return true;
+    }
+    return false;
+}
+
+// Union of L1 and L2
+bool unionL1L2(const string& input) {
+    return checkL1(input) || checkL2(input);
+}
+
+// Intersection of L1 and L2
+bool intersectionL1L2(const string& input) {
+    return checkL1(input) && checkL2(input);
+}
+
+// Concatenation of L1 and L2
+bool concatenationL1L2(const string& input) {
+    // Find a point in the string where L1 ends and L2 begins
+    for (size_t i = 1; i < input.length(); ++i) {
+        string part1 = input.substr(0, i);
+        string part2 = input.substr(i);
+        if (checkL1(part1) && checkL2(part2)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    string input;
+    
+    // Input the string
+    cout << "Enter a string over {a, b}: ";
+    cin >> input;
+    
+    // Check for union of L1 and L2
+    if (unionL1L2(input)) {
+        cout << "Accepted by Union (L1 ∪ L2): The string belongs to L1 or L2.\n";
+    } else {
+        cout << "Rejected by Union (L1 ∪ L2): The string does not belong to L1 or L2.\n";
+    }
+    
+    // Check for intersection of L1 and L2
+    if (intersectionL1L2(input)) {
+        cout << "Accepted by Intersection (L1 ∩ L2): The string belongs to both L1 and L2.\n";
+    } else {
+        cout << "Rejected by Intersection (L1 ∩ L2): The string does not belong to both L1 and L2.\n";
+    }
+    
+    // Check for concatenation of L1 and L2
+    if (concatenationL1L2(input)) {
+        cout << "Accepted by Concatenation (L1 L2): The string is a valid concatenation of L1 and L2.\n";
+    } else {
+        cout << "Rejected by Concatenation (L1 L2): The string is not a valid concatenation of L1 and L2.\n";
+    }
+    
+    return 0;
+}
+
+
+
+
+
+07)   Design a PDA and write a program for simulating the machine which accepts the language
+ {anbn where n>0, S= {a, b}}. 
+
+
+
+
+#include <iostream>
+#include <stack>
+#include <string>
+
+using namespace std;
+
+bool simulatePDA(const string &input) {
+    stack<char> pdaStack;
+    int i = 0;
+
+    // Step 1: Initial stack state
+    pdaStack.push('Z');  // Z is the initial stack symbol
+
+    // Step 2: Process the input
+    // State q1: pushing 'a' onto the stack
+    while (i < input.length() && input[i] == 'a') {
+        pdaStack.push('a');  // Push 'a' onto the stack
+        i++;
+    }
+
+    // Step 3: Process the 'b' characters
+    // State q2: popping 'a' for each 'b'
+    while (i < input.length() && input[i] == 'b') {
+        if (pdaStack.empty() || pdaStack.top() != 'a') {
+            return false;  // Stack should contain 'a' for every 'b'
+        }
+        pdaStack.pop();  // Pop 'a' for every 'b'
+        i++;
+    }
+
+    // Step 4: Check if the stack has only the initial symbol and input is fully processed
+    return (pdaStack.top() == 'Z' && i == input.length());
+}
+
+int main() {
+    string input;
+
+    // Take input string
+    cout << "Enter a string consisting of 'a' and 'b': ";
+    cin >> input;
+
+    // Simulate PDA
+    if (simulatePDA(input)) {
+        cout << "The string is accepted by the PDA." << endl;
+    } else {
+        cout << "The string is not accepted by the PDA." << endl;
+    }
+
+    return 0;
+}
+
+
+08)    Design a PDA and write a program for simulating the machine which accepts the language {wXwr| w
+is any string over S={a, b} and wr is reverse of that string and X is a special symbol }. 
+
+
+
+#include <iostream>
+#include <stack>
+#include <string>
+
+using namespace std;
+
+bool simulatePDA(const string &input) {
+    stack<char> pdaStack;
+    int i = 0;
+
+    // Step 1: Process the first part 'w' and push it onto the stack
+    while (i < input.length() && (input[i] == 'a' || input[i] == 'b')) {
+        pdaStack.push(input[i]);
+        i++;
+    }
+
+    // Step 2: Ensure we encounter the special symbol 'X'
+    if (i >= input.length() || input[i] != 'X') {
+        return false;  // If 'X' is not found, reject the input
+    }
+    i++;  // Move past 'X'
+
+    // Step 3: Process the second part 'w^r' and pop from the stack
+    while (i < input.length() && (input[i] == 'a' || input[i] == 'b')) {
+        if (pdaStack.empty() || pdaStack.top() != input[i]) {
+            return false;  // If stack doesn't match the reverse part, reject the input
+        }
+        pdaStack.pop();
+        i++;
+    }
+
+    // Step 4: Ensure the stack is empty and the entire input has been processed
+    return pdaStack.empty() && i == input.length();
+}
+
+int main() {
+    string input;
+
+    // Take input string
+    cout << "Enter a string in the form 'wXwr': ";
+    cin >> input;
+
+    // Simulate PDA
+    if (simulatePDA(input)) {
+        cout << "The string is accepted by the PDA." << endl;
+    } else {
+        cout << "The string is not accepted by the PDA." << endl;
+    }
+
+    return 0;
+}
+
+09)   Design and simulate a Turing Machine that accepts the language anbncn where n >0. 
+
+
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Turing Machine Class
+class TuringMachine {
+private:
+    string tape;           // Tape to hold the input
+    int head;              // Head position
+    string state;          // Current state
+    const string ACCEPT = "q_accept";
+    const string REJECT = "q_reject";
+
+public:
+    TuringMachine(string input) : tape(input + "_____"), head(0), state("q0") {}
+
+    void run() {
+        while (state != ACCEPT && state != REJECT) {
+            char currentChar = tape[head];
+            if (state == "q0") {          // Start state
+                if (currentChar == 'a') {
+                    tape[head] = 'X';    // Mark 'a' as 'X'
+                    head++;
+                    state = "q1";
+                } else {
+                    state = REJECT;      // Reject if no 'a' is found
+                }
+            } else if (state == "q1") {  // Find and mark 'b'
+                if (currentChar == 'b') {
+                    tape[head] = 'Y';    // Mark 'b' as 'Y'
+                    head++;
+                    state = "q2";
+                } else if (currentChar == 'X' || currentChar == 'Y') {
+                    head++;              // Skip marked characters
+                } else {
+                    state = REJECT;      // Reject if out of order
+                }
+            } else if (state == "q2") {  // Find and mark 'c'
+                if (currentChar == 'c') {
+                    tape[head] = 'Z';    // Mark 'c' as 'Z'
+                    head--;
+                    state = "q3";
+                } else if (currentChar == 'Y' || currentChar == 'Z') {
+                    head++;              // Skip marked characters
+                } else {
+                    state = REJECT;      // Reject if out of order
+                }
+            } else if (state == "q3") {  // Move back to find unmarked 'a'
+                if (currentChar == 'X') {
+                    head--;              // Move left
+                } else if (currentChar == '_') {
+                    head++;
+                    state = "q4";        // Transition to check completion
+                } else {
+                    state = "q0";        // Find next unmarked 'a'
+                    head++;
+                }
+            } else if (state == "q4") {  // Check if all are marked
+                bool valid = true;
+                for (char c : tape) {
+                    if (c != 'X' && c != 'Y' && c != 'Z' && c != '_') {
+                        valid = false;
+                        break;
+                    }
+                }
+                state = valid ? ACCEPT : REJECT;
+            }
+        }
+
+        // Final output
+        if (state == ACCEPT) {
+            cout << "Input is accepted!" << endl;
+        } else {
+            cout << "Input is rejected!" << endl;
+        }
+    }
+};
+
+// Main function
+int main() {
+    string input;
+    cout << "Enter input string (a^n b^n c^n): ";
+    cin >> input;
+
+    TuringMachine tm(input);
+    tm.run();
+
+    return 0;
+}
+
+
+
+
+10)  . Design and simulate a Turing Machine which will increment the given binary number by 1. 
+
+
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class TuringMachine {
+private:
+    vector<char> tape;
+    int head;          // Tape head position
+    string state;      // Current state of the Turing Machine
+
+public:
+    // Constructor to initialize the Turing Machine with the binary input
+    TuringMachine(const string &input) {
+        tape.assign(input.begin(), input.end());  // Load binary input on tape
+        tape.push_back('_');                      // Append blank symbol at the end
+        head = tape.size() - 2;                   // Start at the rightmost bit (second last index)
+        state = "q0";                             // Initial state
+    }
+
+    // Function to simulate a single step of the Turing Machine
+    bool step() {
+        char symbol = tape[head];
+
+        if (state == "q0") {
+            if (symbol == '1') {
+                tape[head] = '0';   // Change '1' to '0' (carry over)
+                head--;             // Move left
+                state = "q1";       // Continue to handle the carry
+            } else if (symbol == '0') {
+                tape[head] = '1';   // Change '0' to '1' (no carry needed)
+                state = "qf";       // Transition to final state
+            } else if (symbol == '_') {
+                tape[head] = '1';   // Add a '1' at the front (since carry remains)
+                state = "qf";       // Transition to final state
+            }
+        } else if (state == "q1") {
+            if (symbol == '1') {
+                tape[head] = '0';   // Keep carrying the 1
+                head--;             // Move left
+            } else if (symbol == '0') {
+                tape[head] = '1';   // Increment and stop carry
+                state = "qf";       // Transition to final state
+            } else if (symbol == '_') {
+                tape[head] = '1';   // Add a '1' at the front if we carried out
+                state = "qf";       // Transition to final state
+            }
+        }
+
+        return true;  // Continue processing
+    }
+
+    // Function to run the Turing Machine until completion
+    bool run() {
+        while (state != "qf") {
+            step();
+        }
+        return true;  // Machine halts after increment
+    }
+
+    // Function to display the tape contents (for debugging/output)
+    void displayTape() const {
+        for (char c : tape) {
+            if (c == '_') break;  // Stop printing when blank symbol is encountered
+            cout << c;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    string input;
+
+    // Input the binary number
+    cout << "Enter a binary number: ";
+    cin >> input;
+
+    // Create a Turing machine instance with the binary input
+    TuringMachine tm(input);
+
+    // Simulate the Turing machine
+    tm.run();
+
+    // Display the updated tape (binary number incremented by 1)
+    cout << "Incremented binary number: ";
+    tm.displayTape();
+
+    return 0;
+}
