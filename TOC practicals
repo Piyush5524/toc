@@ -1,4 +1,7 @@
-01)
+01)    . Design a Finite Automata (FA) that accepts all strings over S={0, 1} having three consecutive 1's as
+a substring. Write a program to simulate this FA.
+
+
 
 #include <iostream>
 #include <string>
@@ -50,7 +53,10 @@ int main() {
     return 0;
 }
 
-02)
+02)   Design a Finite Automata (FA) that accepts all strings over S={0, 1} having either exactly two 1's or
+exactly three 1's, not more nor less. Write a program to simulate this FA.
+
+
 
 #include <iostream>
 #include <string>
@@ -103,7 +109,11 @@ int main() {
     return 0;
 }
 
-03)
+03)    Design a Finite Automata (FA) that accepts language L1, over S={a, b}, comprising of all strings (of
+length 4 or more) having first two characters same as the last two. Write a program to simulate this
+FA.
+
+
 
 #include <iostream>
 #include <string>
@@ -146,7 +156,12 @@ int main() {
     return 0;
 }
 
-04)
+
+
+04)   Design a Finite Automata (FA) that accepts language L2, over S= {a, b} where L2= a(a+b)*b. Write
+a program to simulate this FA. 
+
+
 
 
 #include <iostream>
@@ -207,7 +222,13 @@ int main() {
 }
 
 
-05)
+
+
+05)    Design a Finite Automata (FA) that accepts language EVEN-EVEN over S={a, b}. Write a program
+to simulate this FA 
+
+
+
 
 #include <iostream>
 #include <string>
@@ -275,7 +296,13 @@ int main() {
 }
 
 
-06)
+06)   Write a program to simulate an FA that accepts
+a. Union of the languages L1 and L2
+b. Intersection of the languages L1 and L2
+c. Language L1 L2 (concatenation) 
+
+
+
 
 #include <iostream>
 #include <string>
@@ -353,7 +380,14 @@ int main() {
 }
 
 
-07)
+
+
+
+07)   Design a PDA and write a program for simulating the machine which accepts the language
+ {anbn where n>0, S= {a, b}}. 
+
+
+
 
 #include <iostream>
 #include <stack>
@@ -407,7 +441,9 @@ int main() {
 }
 
 
-08)
+08)    Design a PDA and write a program for simulating the machine which accepts the language {wXwr| w
+is any string over S={a, b} and wr is reverse of that string and X is a special symbol }. 
+
 
 
 #include <iostream>
@@ -462,10 +498,108 @@ int main() {
     return 0;
 }
 
-09)
+09)   Design and simulate a Turing Machine that accepts the language anbncn where n >0. 
 
 
-10)
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Turing Machine Class
+class TuringMachine {
+private:
+    string tape;           // Tape to hold the input
+    int head;              // Head position
+    string state;          // Current state
+    const string ACCEPT = "q_accept";
+    const string REJECT = "q_reject";
+
+public:
+    TuringMachine(string input) : tape(input + "_____"), head(0), state("q0") {}
+
+    void run() {
+        while (state != ACCEPT && state != REJECT) {
+            char currentChar = tape[head];
+            if (state == "q0") {          // Start state
+                if (currentChar == 'a') {
+                    tape[head] = 'X';    // Mark 'a' as 'X'
+                    head++;
+                    state = "q1";
+                } else {
+                    state = REJECT;      // Reject if no 'a' is found
+                }
+            } else if (state == "q1") {  // Find and mark 'b'
+                if (currentChar == 'b') {
+                    tape[head] = 'Y';    // Mark 'b' as 'Y'
+                    head++;
+                    state = "q2";
+                } else if (currentChar == 'X' || currentChar == 'Y') {
+                    head++;              // Skip marked characters
+                } else {
+                    state = REJECT;      // Reject if out of order
+                }
+            } else if (state == "q2") {  // Find and mark 'c'
+                if (currentChar == 'c') {
+                    tape[head] = 'Z';    // Mark 'c' as 'Z'
+                    head--;
+                    state = "q3";
+                } else if (currentChar == 'Y' || currentChar == 'Z') {
+                    head++;              // Skip marked characters
+                } else {
+                    state = REJECT;      // Reject if out of order
+                }
+            } else if (state == "q3") {  // Move back to find unmarked 'a'
+                if (currentChar == 'X') {
+                    head--;              // Move left
+                } else if (currentChar == '_') {
+                    head++;
+                    state = "q4";        // Transition to check completion
+                } else {
+                    state = "q0";        // Find next unmarked 'a'
+                    head++;
+                }
+            } else if (state == "q4") {  // Check if all are marked
+                bool valid = true;
+                for (char c : tape) {
+                    if (c != 'X' && c != 'Y' && c != 'Z' && c != '_') {
+                        valid = false;
+                        break;
+                    }
+                }
+                state = valid ? ACCEPT : REJECT;
+            }
+        }
+
+        // Final output
+        if (state == ACCEPT) {
+            cout << "Input is accepted!" << endl;
+        } else {
+            cout << "Input is rejected!" << endl;
+        }
+    }
+};
+
+// Main function
+int main() {
+    string input;
+    cout << "Enter input string (a^n b^n c^n): ";
+    cin >> input;
+
+    TuringMachine tm(input);
+    tm.run();
+
+    return 0;
+}
+
+
+
+
+10)  . Design and simulate a Turing Machine which will increment the given binary number by 1. 
+
+
 
 
 #include <iostream>
